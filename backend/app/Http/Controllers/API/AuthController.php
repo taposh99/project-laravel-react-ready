@@ -42,12 +42,17 @@ class AuthController extends Controller
         ]);
 
         if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'message' => 'Invalid login credentials'
+            ], 401);
         }
 
         $user = User::where('email', $request->email)->firstOrFail();
+        
+        // Delete existing tokens - Fix: Use tokens() method correctly
+        $user->tokens()->delete();
+        
+        // Create new token
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
@@ -59,7 +64,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // Delete current token
         $request->user()->currentAccessToken()->delete();
+        
         return response()->json(['message' => 'Logged out successfully']);
     }
 

@@ -24,6 +24,7 @@ export const AuthProvider = ({ children }) => {
       const response = await API.get('/user');
       setUser(response.data);
     } catch (error) {
+      console.error('Error fetching user:', error);
       localStorage.removeItem('token');
       setUser(null);
     } finally {
@@ -35,12 +36,15 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await API.post('/login', { email, password });
       const { token, user } = response.data;
+      
       localStorage.setItem('token', token);
       setUser(user);
       toast.success('Login successful!');
       return true;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Login failed');
+      console.error('Login error:', error);
+      const message = error.response?.data?.message || 'Login failed';
+      toast.error(message);
       return false;
     }
   };
@@ -51,12 +55,15 @@ export const AuthProvider = ({ children }) => {
         name, email, password, password_confirmation 
       });
       const { token, user } = response.data;
+      
       localStorage.setItem('token', token);
       setUser(user);
       toast.success('Registration successful!');
       return true;
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Registration failed');
+      console.error('Registration error:', error);
+      const message = error.response?.data?.message || 'Registration failed';
+      toast.error(message);
       return false;
     }
   };

@@ -25,3 +25,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Categories
     Route::apiResource('categories', CategoryController::class);
 });
+Route::get('/test', function () {
+    return response()->json(['message' => 'API is working!']);
+});
